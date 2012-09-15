@@ -1,8 +1,8 @@
-## SimpleDirList ##
+## SimpleDirList
 
 SimpleDirList is PHP directory lister. It's small, simple, fast, fully Unicode-compatible, Modern UI styled and uses "pretty URLs".
 
-### Usage ###
+### Usage
 
 To run it, adjust the config part of index.php to your needs as well as the HTML header afterwards and set up a rewrite rule in your HTTP server.
 
@@ -15,11 +15,11 @@ Example for nginx:
         rewrite ^/foo/(.+)$ /foo/index.php?p=$1 last;
     }
 
-### Notes ###	
+### Notes
 
 * Since PHP cannot interact with multibyte files on Windows properly, this script is limited to Linux.
 
-### Credit ###
+### Credit
 
 * [dAKirby309] for Modern UI icons
 
