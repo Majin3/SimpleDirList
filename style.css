@@ -1,0 +1,79 @@
+html {
+	min-height: 100%;
+	margin: 0;
+	padding: 0;
+}
+body {
+	display: table;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	background: #53A;
+	background: -moz-radial-gradient(center, ellipse cover, #53A 0%, #87B 50%, #63B 100%);
+	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#53A), color-stop(50%,#87B), color-stop(100%,#63B));
+	background: -webkit-radial-gradient(center, ellipse cover, #53A 0%,#87B 50%,#63B 100%);
+	background: -o-radial-gradient(center, ellipse cover, #53A 0%,#87B 50%,#63B 100%);
+	background: -ms-radial-gradient(center, ellipse cover, #53A 0%,#87B 50%,#63B 100%);
+	background: radial-gradient(ellipse at center, #53A 0%,#87B 50%,#63B 100%);
+	background-attachment: fixed;
+	font-family: "Segoe UI", "Meiryo UI", sans-serif;
+	color: #FFF;
+}
+div#content {
+	display: table-cell;
+	vertical-align: middle;
+}
+div.element_main {
+	width: 75%;
+	position: relative;
+	margin: 5px auto;
+}
+div.element_dir, .element_file {
+	padding-left:50px;
+}
+div.element_dir {
+	background: #27E; 
+	background: url('dir.png') no-repeat 9px center;
+	background: url('dir.png') no-repeat 9px center, -moz-linear-gradient(left, #27E, #28E);
+	background: url('dir.png') no-repeat 9px center, -webkit-gradient(linear, left center, right center, from(#27E), to(#28E));
+	background: url('dir.png') no-repeat 9px center, -webkit-linear-gradient(left, #27E, #28E);
+	background: url('dir.png') no-repeat 9px center, -o-linear-gradient(left, #27E, #28E);
+	background: url('dir.png') no-repeat 9px center, -ms-linear-gradient(left, #27E, #28E);
+	background: url('dir.png') no-repeat 9px center, linear-gradient(to right, #27E, #28E);
+	border: 1px solid #49F;
+}
+div.element_file {
+	background: #081;
+	background: url('file.png') no-repeat 9px center;
+	background: url('file.png') no-repeat 9px center, -moz-linear-gradient(left, #081, #0A1);
+	background: url('file.png') no-repeat 9px center, -webkit-gradient(linear, left center, right center, from(#081), to(#0A1));
+	background: url('file.png') no-repeat 9px center, -webkit-linear-gradient(left, #081, #0A1);
+	background: url('file.png') no-repeat 9px center, -o-linear-gradient(left, #081, #0A1);
+	background: url('file.png') no-repeat 9px center, -ms-linear-gradient(left, #081, #0A1);
+	background: url('file.png') no-repeat 9px center, linear-gradient(to right, #081, #0A1);
+	border: 1px solid #1A2;
+}
+span.element_filename {
+	line-height:50px;
+	display: inline-block;
+	width: 90%;
+	list-style-type: none;
+}
+div.element_top, .element_bottom {
+	font-size: 0.8em;
+	position:absolute;
+	right: 0;
+	padding: 2px;
+}
+div.element_top {
+	top: 0;
+}
+div.element_bottom {
+	bottom: 0;
+}
+a {
+	text-decoration: none;
+	color: #FFF;
+}
