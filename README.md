@@ -2,6 +2,8 @@
 
 SimpleDirList is PHP directory lister. It's small, simple, fast, fully Unicode-compatible, Modern UI styled and uses "pretty URLs".
 
+![preview](http://s1.directupload.net/images/120915/d3sfqqdx.png "Preview")
+
 ### Usage
 
 To run it, adjust the config part of index.php to your needs as well as the HTML header afterwards and set up a rewrite rule in your HTTP server.
