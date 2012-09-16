@@ -1,19 +1,16 @@
 <?php
 // config start
-$root = '/home/foo'; // root directory to display (without trailing slash and in UTF-8)
-date_default_timezone_set('Europe/Berlin'); // timezone used for last changed date
+$root = '/foo/bar'; // root directory to display (without trailing slash and in UTF-8)
 setlocale(LC_COLLATE, 'de_DE.utf8'); // locale used for file sorting
-$l_files = 'files'; // localization
-// config end
-
-function cmp($a, $b) {
-	global $path;
-	$a = $path . '/' . $a;
-	$b = $path . '/' . $b;
-	if((is_dir($a) && is_dir($b)) || (!is_dir($a) && !is_dir($b))) {return strcoll($a, $b);}
-	else if(is_dir($a)) {return -1;}
-	else {return 1;}
-}
+date_default_timezone_set('Europe/Berlin'); // timezone for last modified date
+$dateformat = 'd.m.Y H:i'; // date format for last modified date
+// config end / localization start
+$l_dir_up = '⇐';
+$l_last_mod = 'Last modified: ';
+$l_files = ' files';
+$l_sep = ' / ';
+$l_folders = ' folders';
+// localization end
 
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
@@ -51,69 +48,88 @@ if(is_file($path))
 // create a dir array with url-encoded elements for link creation. If root is requested, it's an empty array
 if($path === $root) {
 	$rel_dir_spl = array();
-	$i = 2;
 }
 else {
 	$rel_dir_spl = explode('/', mb_substr($path, $root_len + 1));
 	foreach ($rel_dir_spl as $key => $value) {$rel_dir_spl[$key] = rawurlencode($value);}
-	$i = 1;
+	
+	echo '		<div class="element_main">
+			<a href="../">
+				<div class="element_dir">
+					<span class="element_filename">' . $l_dir_up . '</span>
+				</div>
+			</a>
+		</div>
+';
 }
 
-$dir_cont = scandir($path);
-usort($dir_cont, 'cmp');
-
-$dir_cont_c = count($dir_cont);
-for($i = $i; $i < $dir_cont_c; $i++)
-{
-	$filetype = filetype($path . '/' . $dir_cont[$i]);
+$files = array();
+$dirs = array();
+if($dh = opendir($path)) {
+	while(false !== ($file = readdir($dh))) {
+		if(!in_array($file, array('.', '..'))) {
+			if(is_file($path . '/' . $file)) {array_push($files, $file);}
+			else {array_push($dirs, $file);}
+		}
+	}
+	closedir($dh);
 	
-	// create a copy of the dir array
+	usort($dirs, 'strcoll');
+	usort($files, 'strcoll');
+	$dir_cont = array_merge($dirs, $files);
+}
+
+foreach($dir_cont as $dir_cont_file)
+{
+	$filetype = filetype($path . '/' . $dir_cont_file);
+	
+	// create file link from splitted URL array
 	$filelink = $rel_dir_spl;
-	// if going up, remove the last element of the dir array, otherwise put the target in it
-	if ($dir_cont[$i] === '..') {unset($filelink[count($filelink) - 1]);}
-	else {array_push($filelink, rawurlencode($dir_cont[$i]));}
-	// merge the final link array
+	array_push($filelink, rawurlencode($dir_cont_file));
 	$filelink = implode('/', $filelink);
 
-	// get properties according to content
-	if($dir_cont[$i] === '..')
-	{
-		$up = '';
-		$down = '';
-		$dir_cont[$i] = '⇐';
-	}
-	else if($filetype === 'file')
+	$top = $l_last_mod . date($dateformat, filemtime($path . '/' . $dir_cont_file));
+	
+	// set stuff according to file type
+	if($filetype === 'file')
 	{
 		// get file size
-		$filesize = filesize($path . '/' . $dir_cont[$i]);
+		$filesize = filesize($path . '/' . $dir_cont_file);
 		// calculate file size to display
-		if ($filesize < 1024) {$filesize = $filesize . ' B';}
-		else if ($filesize < 1048576) {$filesize = round($filesize / 1024, 1) . ' KB';}
-		else if ($filesize < 1073741824) {$filesize = round($filesize / 1048576, 1) . ' MB';}
-		else {$filesize = round($filesize / 1073741824, 1) . ' GB';}	
-
-		$up = '
-			<div class="element_top">' . date('d.m.Y H:i', filemtime($path . '/' . $dir_cont[$i])) . '</div>';
-		$down = '
-			<div class="element_bottom">' . $filesize . '</div>';
+		if ($filesize < 1024) {$bottom = $filesize . ' B';}
+		else if ($filesize < 1048576) {$bottom = round($filesize / 1024, 1) . ' KB';}
+		else if ($filesize < 1073741824) {$bottom = round($filesize / 1048576, 1) . ' MB';}
+		else {$bottom = round($filesize / 1073741824, 1) . ' GB';}
 	}
 	else
 	{
-		$up = '<div class="element_top">' . date('d.m.Y H:i', filemtime($path . '/' . $dir_cont[$i])) . '</div>';
-		$down = '<div class="element_bottom">' . (count(scandir($path . '/' . $dir_cont[$i])) - 2) . ' ' .  $l_files . '</div>';
+		$filelink .= '/';
+		
+		$fic = 0;
+		$foc = 0;
+		$fch = opendir($path . '/' . $dir_cont_file);
+		while(false !== ($fchf = readdir($fch))) {
+			if(!in_array($fchf, array('.', '..'))) {
+				if(is_file($path . '/' . $fchf)) {$fic++;}
+				else {$foc++;}
+			}
+		}
+		closedir($fch);
+
+		$bottom = $fic . $l_files . $l_sep . $foc . $l_folders;
 	}
 	
 	echo '		<div class="element_main">
 			<a href="/eac/' . $filelink . '">
 				<div class="element_' . $filetype .'">
-					<span class="element_filename">' . htmlspecialchars($dir_cont[$i]) . '</span>' . 
-					$up .  
-					$down 
-				 . '</div>
+					<span class="element_filename">' . htmlspecialchars($dir_cont_file) . '</span>
+					<div class="element_top">' . $top . '</div>
+					<div class="element_bottom">' . $bottom . '</div>
+				</div>
 			</a>
 		</div>
 ';
 }
 ?>
-	</div></div></body>
+	</div></body>
 </html>
