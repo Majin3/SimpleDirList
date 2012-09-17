@@ -24,16 +24,64 @@ if(isset($_GET['p'])) {
 }
 else {$path = $root;}
 
-if(is_file($path))
-{
-	// set downloadable file header
+if(is_file($path)) {
+	$filesize = filesize($path);
+	$fp = fopen($path, 'rb');
+
+	// handle HTTP_RANGE header
+	if(isset($_SERVER['HTTP_RANGE'])) {
+		// send 416 on invalid header
+		if (!preg_match('/^bytes=(\d*-\d+|\d+-\d*)$/', $_SERVER['HTTP_RANGE'])) {
+			header('HTTP/1.1 416 Requested Range Not Satisfiable');
+			header('Content-Range: bytes */' . $filesize);
+			exit;
+		}
+		
+		$bytes = explode('-', substr($_SERVER['HTTP_RANGE'], 6));
+		// if no last byte sent, assume end of file is requested
+		if($bytes[1] === '') {$bytes[1] = $filesize - 1;}
+		// if no first byte is present, assume suffix-byte-range-spec
+		if($bytes[0] === '') {
+			// if the the requested suffix-length is longer than file size, output whole file, otherwise suffix-lenght to end
+			if($bytes[1] >= $filesize) {$start = 0;}
+			else {$start = $filesize - $bytes[1] - 1;}
+			$end = $filesize - 1;
+		}
+		// if requested range is valid, save it
+		else if($bytes[0] < $bytes[1]) {
+			$start = $bytes[0];
+			// if no last byte sent, assume end of file is requested
+			$end = $bytes[1];
+		}
+		else {
+			header('HTTP/1.1 416 Requested Range Not Satisfiable');
+			header('Content-Range: bytes */' . $filesize);
+			exit;
+		}
+		
+		// print headers
+		header('HTTP/1.1 206 Partial Content');
+		header('Content-Length: ' . ($end - $start + 1));
+        header('Content-Range: bytes ' . $start . '-' .  $end . '/' . $filesize);
+		
+		// seek to start position
+		fseek($fp, $start);
+	}
+	else {
+		header('Content-Length: ' . $filesize);
+	}
 	header('Content-Type: application/octet-stream');
 	header('Content-Disposition: attachment');
-	header('Content-Length: ' . filesize($path));
-	// disable buffering, otherwise large files will fail
-	ob_end_flush();
-	readfile($path);
-	exit();
+	header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($path)) . ' GMT');
+	header('Accept-Ranges: bytes');
+	
+	while(!feof($fp) && !connection_aborted())
+	{
+		set_time_limit(0);
+		print(fread($fp, 8096));
+	}
+	fclose($fp);
+	exit;
 }
 ?>
 <!doctype html>
