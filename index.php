@@ -158,7 +158,7 @@ foreach($dir_cont as $dir_cont_file)
 		$fch = opendir($path . '/' . $dir_cont_file);
 		while(false !== ($fchf = readdir($fch))) {
 			if(!in_array($fchf, array('.', '..'))) {
-				if(is_file($path . '/' . $fchf)) {$fic++;}
+				if(is_file($path . '/' . $dir_cont_file . '/' . $fchf)) {$fic++;}
 				else {$foc++;}
 			}
 		}
