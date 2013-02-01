@@ -7,7 +7,7 @@ SimpleDirList is a PHP directory lister. It's small, simple, fast, fully Unicode
 ### Usage
 
 To run it, adjust the config part of index.php to your needs as well as the HTML header afterwards and set up a rewrite rule in your HTTP server.
-Please that this script is completely based on PHP and doesn't have to be in the same directory as the files you want it to list (actually, it's not even supposed to be in the same dir). Only your PHP service needs access to the files, not the HTTP server.
+Please note that this script is completely based on PHP and doesn't have to be in the same directory as the files you want it to list (actually, it's not even supposed to be in the same dir). Only your PHP service needs access to the files, not the HTTP server.
 
 Example for nginx (/foo/ subdir):
 
@@ -29,7 +29,6 @@ Example for mod_rewrite (root):
 
 * Since PHP cannot interact with multibyte files on Windows properly, this script is limited to Linux.
 * If your files come out corrupted, check whether you added an UTF-8 header to index.php by mistake
-* The "X files / Y folders" indication is broken and actually displays both files and folders as folders. Will be fixed at some point.
 
 ### Credit
 
